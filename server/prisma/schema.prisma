@@ -1,0 +1,545 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SYSTEM_ADMIN
+  SOP_OWNER
+  REVIEWER
+  APPROVER
+  QUALITY_MANAGER
+  PROJECT_MANAGER
+  EMPLOYEE_LEARNER
+  AUDITOR
+  CAPA_OWNER
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SopLifecycleStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  RELEASED
+  EFFECTIVE
+  OBSOLETE
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum QualificationStatus {
+  ASSIGNED
+  IN_PROGRESS
+  QUIZ_FAILED
+  ASSESSMENT_PENDING
+  QUALIFIED
+  EXPIRED
+  SUSPENDED
+}
+
+enum AuditStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum IssueStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum CapaStatus {
+  OPEN
+  CONTAINMENT_DONE
+  RCA_DONE
+  ACTION_TAKEN
+  VERIFIED_CLOSED
+}
+
+enum DocumentStatus {
+  PENDING
+  UPLOADED
+  VERIFIED
+  REJECTED
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  name      String
+  code      String    @unique
+  industry  String    @default("Construction / Real Estate")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  users     User[]
+  projects  Project[]
+  sops      Sop[]
+}
+
+model User {
+  id              String        @id @default(uuid())
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email           String        @unique
+  passwordHash    String
+  fullName        String
+  role            Role          @default(EMPLOYEE_LEARNER)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  employeeProfile Employee?
+  ownedSops       Sop[]         @relation("SopOwner")
+  createdVersions SopVersion[]  @relation("VersionCreator")
+  reviewedVersions SopVersion[] @relation("VersionReviewer")
+  approvedVersions SopVersion[] @relation("VersionApprover")
+  managedProjects Project[]     @relation("ProjectManager")
+  assignedMappings ProjectSopMapping[] @relation("MappingLead")
+  auditsConducted Audit[]       @relation("Auditor")
+  reportedIssues  IssueDeviation[] @relation("IssueReporter")
+  assignedIssues  IssueDeviation[] @relation("IssueAssignee")
+  capaOwned       CapaRecord[]  @relation("CapaOwner")
+  capaVerified    CapaRecord[]  @relation("CapaVerifier")
+  evaluatedAssessments AssessmentSubmission[] @relation("Evaluator")
+}
+
+model Employee {
+  id              String        @id @default(uuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeCode    String        @unique
+  department      String
+  designation     String
+  location        String?
+  reportingManager String?
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  assignments     EmployeeSopAssignment[]
+  quizAttempts    QuizAttempt[]
+  assessments     AssessmentSubmission[]
+  qualifications  Qualification[]
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code            String        @unique
+  name            String
+  projectType     String        @default("High-Rise Residential")
+  client          String?
+  location        String
+  lat             Float         @default(0.0)
+  lng             Float         @default(0.0)
+  areaAcres       Float         @default(0.0)
+  floors          Int           @default(1)
+  flats           Int           @default(1)
+  amenities       String[]      @default([])
+  startDate       DateTime
+  endDate         DateTime
+  status          ProjectStatus @default(IN_PROGRESS)
+  managerId       String?
+  manager         User?         @relation("ProjectManager", fields: [managerId], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  sops            ProjectSopMapping[]
+  assignments     EmployeeSopAssignment[]
+  documents       ProjectDocument[]
+  audits          Audit[]
+  issues          IssueDeviation[]
+}
+
+model Sop {
+  id                    String        @id @default(uuid())
+  organizationId        String
+  organization          Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code                  String        @unique
+  title                 String
+  sopType               String        @default("Standard Operating Procedure")
+  category              String        @default("Standard Works")
+  process               String        @default("General Execution")
+  department            String
+  ownerId               String
+  owner                 User          @relation("SopOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  criticality           Severity      @default(MEDIUM)
+  reviewFrequencyMonths Int           @default(12)
+  purpose               String?
+  scope                 String?
+  responsibilities      String?
+  applicableIndustries  String[]      @default(["Construction / Infrastructure"])
+  applicableProjectTypes String[]     @default(["High-Rise Residential", "Commercial EPC", "Plot Development"])
+  applicableRoles       String[]      @default(["Site Engineer", "Quality Inspector", "Safety Officer"])
+  currentVersionId      String?       @unique
+  currentVersion        SopVersion?   @relation("CurrentSopVersion", fields: [currentVersionId], references: [id])
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  versions              SopVersion[]  @relation("AllVersions")
+}
+
+model SopVersion {
+  id              String              @id @default(uuid())
+  sopId           String
+  sop             Sop                 @relation("AllVersions", fields: [sopId], references: [id], onDelete: Cascade)
+  versionNumber   String              // e.g. "V1.0", "V2.0"
+  lifecycleStatus SopLifecycleStatus  @default(DRAFT)
+  revisionReason  String?
+  changeSummary   String?
+  inputs          String?
+  materials       String?
+  safetyPpe       String?
+  expectedOutput  String?
+  references      String?
+  createdById     String
+  createdBy       User                @relation("VersionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  reviewedById    String?
+  reviewedBy      User?               @relation("VersionReviewer", fields: [reviewedById], references: [id])
+  approvedById    String?
+  approvedBy      User?               @relation("VersionApprover", fields: [approvedById], references: [id])
+  effectiveDate   DateTime?
+  expiryDate      DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  asCurrent       Sop?                @relation("CurrentSopVersion")
+  steps           SopStep[]
+  quizzes         Quiz[]
+  assessments     AssessmentTemplate[]
+  auditTemplates  AuditTemplate[]
+  projectMappings ProjectSopMapping[]
+  assignments     EmployeeSopAssignment[]
+  qualifications  Qualification[]
+  audits          Audit[]
+  issues          IssueDeviation[]
+  projectDocs     ProjectDocument[]
+
+  @@unique([sopId, versionNumber])
+}
+
+model SopStep {
+  id            String      @id @default(uuid())
+  sopVersionId  String
+  sopVersion    SopVersion  @relation(fields: [sopVersionId], references: [id], onDelete: Cascade)
+  stepNumber    Int
+  title         String
+  instructions  String
+  mediaUrl      String?
+  attachments   String[]    @default([])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([sopVersionId, stepNumber])
+}
+
+model ProjectSopMapping {
+  id              String      @id @default(uuid())
+  projectId       String
+  project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sopVersionId    String
+  sopVersion      SopVersion  @relation(fields: [sopVersionId], references: [id], onDelete: Restrict)
+  assignedLeadId  String
+  assignedLead    User        @relation("MappingLead", fields: [assignedLeadId], references: [id], onDelete: Restrict)
+  dueDate         DateTime?
+  completedAt     DateTime?
+  previousSopId   String?     // Preceding sequential stage dependency
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([projectId, sopVersionId])
+}
+
+model EmployeeSopAssignment {
+  id            String            @id @default(uuid())
+  employeeId    String
+  employee      Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  projectId     String
+  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sopVersionId  String
+  sopVersion    SopVersion        @relation(fields: [sopVersionId], references: [id], onDelete: Restrict)
+  assignedDate  DateTime          @default(now())
+  dueDate       DateTime?
+  completedDate DateTime?
+  progressPct   Int               @default(0)
+  status        AssignmentStatus  @default(ASSIGNED)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([employeeId, projectId, sopVersionId])
+}
+
+model Quiz {
+  id            String          @id @default(uuid())
+  sopVersionId  String
+  sopVersion    SopVersion      @relation(fields: [sopVersionId], references: [id], onDelete: Cascade)
+  title         String
+  passingPct    Int             @default(80)
+  maxAttempts   Int             @default(3)
+  timeLimitMins Int?            @default(20)
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  questions     QuizQuestion[]
+  attempts      QuizAttempt[]
+}
+
+model QuizQuestion {
+  id            String    @id @default(uuid())
+  quizId        String
+  quiz          Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  orderIndex    Int       @default(1)
+  questionText  String
+  questionType  String    @default("MCQ") // MCQ, TRUE_FALSE
+  options       Json      // Array of strings or { id, text }
+  correctAnswer String    // The key or text of correct answer
+  explanation   String?
+  marks         Int       @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model QuizAttempt {
+  id              String    @id @default(uuid())
+  quizId          String
+  quiz            Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  employeeId      String
+  employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  attemptNumber   Int
+  scorePct        Int
+  passed          Boolean
+  durationSecs    Int       @default(0)
+  submittedAnswers Json     // Map of questionId -> answer
+  isLocked        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+}
+
+model AssessmentTemplate {
+  id                  String    @id @default(uuid())
+  sopVersionId        String
+  sopVersion          SopVersion @relation(fields: [sopVersionId], references: [id], onDelete: Cascade)
+  title               String
+  assessmentType      String    @default("SIMULATION") // SIMULATION, PRACTICAL_OBSERVATION, ASSIGNMENT
+  scenarioDescription String
+  expectedOutputs     String
+  maxScore            Int       @default(100)
+  passingScore        Int       @default(75)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  submissions         AssessmentSubmission[]
+}
+
+model AssessmentSubmission {
+  id                    String              @id @default(uuid())
+  assessmentTemplateId  String
+  template              AssessmentTemplate  @relation(fields: [assessmentTemplateId], references: [id], onDelete: Cascade)
+  employeeId            String
+  employee              Employee            @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  submittedData         String
+  evaluatorId           String?
+  evaluator             User?               @relation("Evaluator", fields: [evaluatorId], references: [id])
+  score                 Int?
+  passed                Boolean?
+  evaluatorFeedback     String?
+  evaluatedAt           DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model Qualification {
+  id                String              @id @default(uuid())
+  employeeId        String
+  employee          Employee            @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  sopVersionId      String
+  sopVersion        SopVersion          @relation(fields: [sopVersionId], references: [id], onDelete: Restrict)
+  status            QualificationStatus @default(QUALIFIED)
+  quizScorePct      Int?
+  assessmentScore   Int?
+  certificateNumber String              @unique
+  issuedAt          DateTime            @default(now())
+  expiresAt         DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@unique([employeeId, sopVersionId])
+}
+
+model AuditTemplate {
+  id            String            @id @default(uuid())
+  sopVersionId  String
+  sopVersion    SopVersion        @relation(fields: [sopVersionId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  checkpoints   AuditCheckpoint[]
+}
+
+model AuditCheckpoint {
+  id              String        @id @default(uuid())
+  auditTemplateId String
+  auditTemplate   AuditTemplate @relation(fields: [auditTemplateId], references: [id], onDelete: Cascade)
+  checkpointText  String
+  expectedControl String
+  severity        Severity      @default(MEDIUM)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  findings        AuditFinding[]
+}
+
+model Audit {
+  id            String        @id @default(uuid())
+  projectId     String
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sopVersionId  String
+  sopVersion    SopVersion    @relation(fields: [sopVersionId], references: [id], onDelete: Restrict)
+  auditorId     String
+  auditor       User          @relation("Auditor", fields: [auditorId], references: [id], onDelete: Restrict)
+  scheduledDate DateTime
+  actualDate    DateTime?
+  status        AuditStatus   @default(SCHEDULED)
+  overallScore  Int?
+  passed        Boolean?
+  remarks       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  findings      AuditFinding[]
+  issues        IssueDeviation[]
+}
+
+model AuditFinding {
+  id            String          @id @default(uuid())
+  auditId       String
+  audit         Audit           @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  checkpointId  String
+  checkpoint    AuditCheckpoint @relation(fields: [checkpointId], references: [id], onDelete: Restrict)
+  passed        Boolean
+  observation   String
+  severity      Severity        @default(MEDIUM)
+  photoUrl      String?
+  createdAt     DateTime        @default(now())
+
+  deviations    IssueDeviation[]
+}
+
+model IssueDeviation {
+  id              String        @id @default(uuid())
+  projectId       String
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sopVersionId    String?
+  sopVersion      SopVersion?   @relation(fields: [sopVersionId], references: [id])
+  auditId         String?
+  audit           Audit?        @relation(fields: [auditId], references: [id])
+  auditFindingId  String?
+  auditFinding    AuditFinding? @relation(fields: [auditFindingId], references: [id])
+  title           String
+  description     String
+  severity        Severity      @default(HIGH)
+  status          IssueStatus   @default(OPEN)
+  reportedById    String
+  reportedBy      User          @relation("IssueReporter", fields: [reportedById], references: [id], onDelete: Restrict)
+  assignedToId    String
+  assignedTo      User          @relation("IssueAssignee", fields: [assignedToId], references: [id], onDelete: Restrict)
+  attachmentUrl   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  capa            CapaRecord?
+}
+
+model CapaRecord {
+  id                    String      @id @default(uuid())
+  issueId               String      @unique
+  issue                 IssueDeviation @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  containmentActions    String?
+  rootCauseAnalysis     String?     // 5-Whys / Fishbone summary
+  correctiveAction      String?
+  preventiveAction      String?
+  verificationNotes     String?
+  verificationEvidence  String?
+  status                CapaStatus  @default(OPEN)
+  ownerId               String
+  owner                 User        @relation("CapaOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  verifierId            String?
+  verifier              User?       @relation("CapaVerifier", fields: [verifierId], references: [id])
+  dueDate               DateTime?
+  closedAt              DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}
+
+model DocumentMaster {
+  id                  String            @id @default(uuid())
+  documentType        String            // DRAWING, BOQ, METHOD_STATEMENT, TEST_REPORT, CERTIFICATE
+  name                String            @unique
+  description         String?
+  isMandatoryDefault  Boolean           @default(true)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  projectDocuments    ProjectDocument[]
+}
+
+model ProjectDocument {
+  id                  String          @id @default(uuid())
+  projectId           String
+  project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  documentMasterId    String?
+  documentMaster      DocumentMaster? @relation(fields: [documentMasterId], references: [id])
+  sopVersionId        String?
+  sopVersion          SopVersion?     @relation(fields: [sopVersionId], references: [id])
+  documentName        String
+  fileName            String?
+  fileUrl             String?
+  fileSizeBytes       Int?
+  uploadedById        String?
+  assignedReviewer    String?
+  dueDate             DateTime?
+  isRequired          Boolean         @default(true)
+  status              DocumentStatus  @default(PENDING)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+}
+
+model AuditLog {
+  id            String    @id @default(uuid())
+  userId        String?
+  userEmail     String?
+  action        String
+  entityType    String
+  entityId      String
+  details       String?
+  ipAddress     String?
+  createdAt     DateTime  @default(now())
+}

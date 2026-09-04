@@ -1,5 +1,4 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -10,8 +9,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
-  --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -34,7 +33,6 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-steel: var(--steel);
   --color-steel-foreground: var(--steel-foreground);
-  --color-concrete: var(--concrete);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -49,47 +47,50 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  /* Concrete gray canvas */
-  --background: oklch(0.977 0.004 95);
-  --foreground: oklch(0.31 0.036 251);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.31 0.036 251);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.31 0.036 251);
-  /* Deep Safety Orange #E85D25 */
-  --primary: oklch(0.635 0.183 39.5);
-  --primary-foreground: oklch(1 0 0);
-  /* Steel Blue #2C3E50 */
-  --steel: oklch(0.343 0.038 251.5);
-  --steel-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.929 0.005 95);
-  --secondary-foreground: oklch(0.343 0.038 251.5);
-  --muted: oklch(0.945 0.004 95);
-  --muted-foreground: oklch(0.55 0.012 251);
-  --accent: oklch(0.929 0.005 95);
-  --accent-foreground: oklch(0.343 0.038 251.5);
-  /* Safety Yellow #F5B700 */
-  --warning: oklch(0.807 0.157 82.5);
-  --warning-foreground: oklch(0.28 0.03 80);
-  /* Construction Green #2E7D32 */
-  --success: oklch(0.508 0.126 147);
-  --success-foreground: oklch(1 0 0);
-  /* Danger #C0392B */
-  --destructive: oklch(0.512 0.176 27.5);
-  --destructive-foreground: oklch(1 0 0);
-  --concrete: oklch(0.75 0.012 95);
-  --border: oklch(0.906 0.005 95);
-  --input: oklch(0.906 0.005 95);
-  --ring: oklch(0.635 0.183 39.5);
-  --sidebar: oklch(0.343 0.038 251.5);
-  --sidebar-foreground: oklch(0.93 0.008 250);
-  --sidebar-primary: oklch(0.635 0.183 39.5);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.4 0.038 251.5);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.41 0.035 251.5);
-  --sidebar-ring: oklch(0.635 0.183 39.5);
+  --radius: 0.625rem;
+  /* Attractive Warm Oat / Champagne Background #FAF7F2 */
+  --background: #FAF7F2;
+  --foreground: #0F172A;
+  /* Pure Crisp White Surface Cards */
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  /* Safety Deep Orange #E85D25 */
+  --primary: #E85D25;
+  --primary-foreground: #FFFFFF;
+  /* Steel Slate #1E293B */
+  --steel: #1E293B;
+  --steel-foreground: #FFFFFF;
+  /* Neutral Warm Slate */
+  --secondary: #F1EFEA;
+  --secondary-foreground: #0F172A;
+  --muted: #F1EFEA;
+  --muted-foreground: #64748B;
+  --accent: #F1EFEA;
+  --accent-foreground: #0F172A;
+  /* Safety Amber #D97706 */
+  --warning: #D97706;
+  --warning-foreground: #78350F;
+  /* Construction Green #16A34A */
+  --success: #16A34A;
+  --success-foreground: #FFFFFF;
+  /* Danger Red #DC2626 */
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  /* Clean Borders #E8E3DA */
+  --border: #E8E3DA;
+  --input: #E8E3DA;
+  --ring: #E85D25;
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #E85D25;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FAF7F2;
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: #E8E3DA;
+  --sidebar-ring: #E85D25;
 }
 
 @layer base {
@@ -101,28 +102,136 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
+    color: #0F172A;
+    font-weight: 700;
     letter-spacing: -0.015em;
   }
 }
 
-@utility blueprint-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--concrete) 45%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--concrete) 45%, transparent) 1px, transparent 1px);
-  background-size: 28px 28px;
+.card-hover {
+  transition: all 0.2s ease-in-out;
+}
+.card-hover:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
-@utility blueprint-dots {
-  background-image: radial-gradient(
-    color-mix(in oklab, var(--concrete) 70%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 16px 16px;
+/* ========================================================================= */
+/* Scroll-Driven Animations & Scroll-Reveal Effects (Silky Smooth 60fps)     */
+/* ========================================================================= */
+
+@keyframes scroll-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(56px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
+
+@keyframes scroll-reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scroll-reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Fallback & Enhanced JS Reveal Classes */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-fade-left {
+  opacity: 0;
+  transform: translateX(-48px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-fade-left.is-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-fade-right {
+  opacity: 0;
+  transform: translateX(48px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-fade-right.is-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.95) translateY(36px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-scale.is-revealed {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Native CSS Scroll-Driven Animations (Chrome / Edge / Safari 18+) */
+@supports (animation-timeline: view()) {
+  .scroll-driven-card {
+    animation: scroll-reveal-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 52%;
+  }
+
+  .scroll-driven-card-left {
+    animation: scroll-reveal-left linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 52%;
+  }
+
+  .scroll-driven-card-right {
+    animation: scroll-reveal-right linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 52%;
+  }
+}
+
+
+

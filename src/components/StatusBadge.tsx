@@ -8,15 +8,15 @@ import type {
 import { cn } from "@/lib/utils";
 
 const base =
-  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap";
+  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold whitespace-nowrap border";
 
 const tone = {
-  gray: "bg-secondary text-muted-foreground",
-  amber: "bg-warning/20 text-warning-foreground",
-  green: "bg-success/15 text-success",
-  red: "bg-destructive/12 text-destructive",
-  steel: "bg-steel/10 text-steel",
-  darkred: "bg-destructive text-destructive-foreground",
+  gray: "bg-slate-100 text-slate-700 border-slate-200",
+  amber: "bg-amber-50 text-amber-800 border-amber-200",
+  green: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  red: "bg-rose-50 text-rose-800 border-rose-200",
+  steel: "bg-slate-800 text-white border-slate-800",
+  orange: "bg-orange-50 text-orange-800 border-orange-200",
 } as const;
 
 export function StepStatusBadge({ status, className }: { status: StepStatus; className?: string }) {
@@ -35,7 +35,7 @@ export function StepStatusBadge({ status, className }: { status: StepStatus; cla
 
 export function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
   const t =
-    status === "Completed" ? tone.green : status === "In Progress" ? tone.amber : tone.steel;
+    status === "Completed" ? tone.green : status === "In Progress" ? tone.amber : tone.gray;
   return <span className={cn(base, t)}>{status}</span>;
 }
 
@@ -43,7 +43,7 @@ export function PriorityBadge({ priority }: { priority: IssuePriority }) {
   const t = priority === "High" ? tone.red : priority === "Medium" ? tone.amber : tone.gray;
   return (
     <span className={cn(base, t)}>
-      {priority === "High" && <AlertTriangle className="size-3" />}
+      {priority === "High" && <AlertTriangle className="size-3 text-rose-600" />}
       {priority}
     </span>
   );
@@ -53,9 +53,9 @@ export function IssueStatusBadge({ status }: { status: IssueStatus }) {
   const map: Record<IssueStatus, string> = {
     Open: tone.red,
     Assigned: tone.amber,
-    "In Progress": tone.steel,
+    "In Progress": tone.orange,
     Resolved: tone.green,
-    Closed: "bg-success/8 text-success/80",
+    Closed: "bg-slate-100 text-slate-600 border-slate-200",
   };
   return <span className={cn(base, map[status])}>{status}</span>;
 }
@@ -70,9 +70,12 @@ export function DocStatusBadge({ uploaded }: { uploaded: boolean }) {
 
 export function ProgressBar({ pct, className }: { pct: number; className?: string }) {
   return (
-    <div className={cn("h-1.5 w-full overflow-hidden rounded-full bg-secondary", className)}>
+    <div className={cn("h-2 w-full overflow-hidden rounded-full bg-slate-100 border border-slate-200/60", className)}>
       <div
-        className={cn("h-full rounded-full", pct === 100 ? "bg-success" : "bg-primary")}
+        className={cn(
+          "h-full rounded-full transition-all duration-300",
+          pct === 100 ? "bg-emerald-600" : "bg-primary",
+        )}
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -91,11 +94,11 @@ export function Chip({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium",
+        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium",
         tone[toneKey],
       )}
     >
-      <span className="opacity-70">{label}</span>
+      <span className="opacity-70">{label}:</span>
       <span className="font-bold">{value}</span>
     </span>
   );

@@ -10,33 +10,274 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuditsRouteImport } from './routes/audits'
+import { Route as CompetencyRouteImport } from './routes/competency'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DocumentsRouteImport } from './routes/documents'
+import { Route as LmsRouteImport } from './routes/lms'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as IssuesIndexRouteImport } from './routes/issues/index'
+import { Route as IssuesIssueIdRouteImport } from './routes/issues/$issueId'
+import { Route as LmsIndexRouteImport } from './routes/lms.index'
+import { Route as LmsAssessmentsRouteImport } from './routes/lms.assessments'
+import { Route as LmsMyLearningRouteImport } from './routes/lms.my-learning'
+import { Route as LmsQuizzesRouteImport } from './routes/lms.quizzes'
+import { Route as LmsReportsRouteImport } from './routes/lms.reports'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
+import { Route as SopLibraryIndexRouteImport } from './routes/sop-library/index'
+import { Route as SopLibrarySopIdRouteImport } from './routes/sop-library/$sopId'
+import { Route as ProjectsProjectIdIndexRouteImport } from './routes/projects.$projectId.index'
+import { Route as ProjectsProjectIdSopsProjectSopIdRouteImport } from './routes/projects.$projectId.sops.$projectSopId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuditsRoute = AuditsRouteImport.update({
+  id: '/audits',
+  path: '/audits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetencyRoute = CompetencyRouteImport.update({
+  id: '/competency',
+  path: '/competency',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentsRoute = DocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LmsRoute = LmsRouteImport.update({
+  id: '/lms',
+  path: '/lms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IssuesIndexRoute = IssuesIndexRouteImport.update({
+  id: '/issues/',
+  path: '/issues/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IssuesIssueIdRoute = IssuesIssueIdRouteImport.update({
+  id: '/issues/$issueId',
+  path: '/issues/$issueId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LmsIndexRoute = LmsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsAssessmentsRoute = LmsAssessmentsRouteImport.update({
+  id: '/assessments',
+  path: '/assessments',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsMyLearningRoute = LmsMyLearningRouteImport.update({
+  id: '/my-learning',
+  path: '/my-learning',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsQuizzesRoute = LmsQuizzesRouteImport.update({
+  id: '/quizzes',
+  path: '/quizzes',
+  getParentRoute: () => LmsRoute,
+} as any)
+const LmsReportsRoute = LmsReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => LmsRoute,
+} as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SopLibraryIndexRoute = SopLibraryIndexRouteImport.update({
+  id: '/sop-library/',
+  path: '/sop-library/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SopLibrarySopIdRoute = SopLibrarySopIdRouteImport.update({
+  id: '/sop-library/$sopId',
+  path: '/sop-library/$sopId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectIdIndexRoute = ProjectsProjectIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectsProjectIdRoute,
+} as any)
+const ProjectsProjectIdSopsProjectSopIdRoute =
+  ProjectsProjectIdSopsProjectSopIdRouteImport.update({
+    id: '/sops/$projectSopId',
+    path: '/sops/$projectSopId',
+    getParentRoute: () => ProjectsProjectIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/audits': typeof AuditsRoute
+  '/competency': typeof CompetencyRoute
+  '/dashboard': typeof DashboardRoute
+  '/documents': typeof DocumentsRoute
+  '/lms': typeof LmsRouteWithChildren
+  '/login': typeof LoginRoute
+  '/issues/$issueId': typeof IssuesIssueIdRoute
+  '/lms/assessments': typeof LmsAssessmentsRoute
+  '/lms/my-learning': typeof LmsMyLearningRoute
+  '/lms/quizzes': typeof LmsQuizzesRoute
+  '/lms/reports': typeof LmsReportsRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
+  '/sop-library/$sopId': typeof SopLibrarySopIdRoute
+  '/issues/': typeof IssuesIndexRoute
+  '/lms/': typeof LmsIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/sop-library/': typeof SopLibraryIndexRoute
+  '/projects/$projectId/': typeof ProjectsProjectIdIndexRoute
+  '/projects/$projectId/sops/$projectSopId': typeof ProjectsProjectIdSopsProjectSopIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/audits': typeof AuditsRoute
+  '/competency': typeof CompetencyRoute
+  '/dashboard': typeof DashboardRoute
+  '/documents': typeof DocumentsRoute
+  '/login': typeof LoginRoute
+  '/issues/$issueId': typeof IssuesIssueIdRoute
+  '/lms/assessments': typeof LmsAssessmentsRoute
+  '/lms/my-learning': typeof LmsMyLearningRoute
+  '/lms/quizzes': typeof LmsQuizzesRoute
+  '/lms/reports': typeof LmsReportsRoute
+  '/sop-library/$sopId': typeof SopLibrarySopIdRoute
+  '/issues': typeof IssuesIndexRoute
+  '/lms': typeof LmsIndexRoute
+  '/projects': typeof ProjectsIndexRoute
+  '/sop-library': typeof SopLibraryIndexRoute
+  '/projects/$projectId': typeof ProjectsProjectIdIndexRoute
+  '/projects/$projectId/sops/$projectSopId': typeof ProjectsProjectIdSopsProjectSopIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/audits': typeof AuditsRoute
+  '/competency': typeof CompetencyRoute
+  '/dashboard': typeof DashboardRoute
+  '/documents': typeof DocumentsRoute
+  '/lms': typeof LmsRouteWithChildren
+  '/login': typeof LoginRoute
+  '/issues/$issueId': typeof IssuesIssueIdRoute
+  '/lms/assessments': typeof LmsAssessmentsRoute
+  '/lms/my-learning': typeof LmsMyLearningRoute
+  '/lms/quizzes': typeof LmsQuizzesRoute
+  '/lms/reports': typeof LmsReportsRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
+  '/sop-library/$sopId': typeof SopLibrarySopIdRoute
+  '/issues/': typeof IssuesIndexRoute
+  '/lms/': typeof LmsIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/sop-library/': typeof SopLibraryIndexRoute
+  '/projects/$projectId/': typeof ProjectsProjectIdIndexRoute
+  '/projects/$projectId/sops/$projectSopId': typeof ProjectsProjectIdSopsProjectSopIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/audits'
+    | '/competency'
+    | '/dashboard'
+    | '/documents'
+    | '/lms'
+    | '/login'
+    | '/issues/$issueId'
+    | '/lms/assessments'
+    | '/lms/my-learning'
+    | '/lms/quizzes'
+    | '/lms/reports'
+    | '/projects/$projectId'
+    | '/sop-library/$sopId'
+    | '/issues/'
+    | '/lms/'
+    | '/projects/'
+    | '/sop-library/'
+    | '/projects/$projectId/'
+    | '/projects/$projectId/sops/$projectSopId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/audits'
+    | '/competency'
+    | '/dashboard'
+    | '/documents'
+    | '/login'
+    | '/issues/$issueId'
+    | '/lms/assessments'
+    | '/lms/my-learning'
+    | '/lms/quizzes'
+    | '/lms/reports'
+    | '/sop-library/$sopId'
+    | '/issues'
+    | '/lms'
+    | '/projects'
+    | '/sop-library'
+    | '/projects/$projectId'
+    | '/projects/$projectId/sops/$projectSopId'
+  id:
+    | '__root__'
+    | '/'
+    | '/audits'
+    | '/competency'
+    | '/dashboard'
+    | '/documents'
+    | '/lms'
+    | '/login'
+    | '/issues/$issueId'
+    | '/lms/assessments'
+    | '/lms/my-learning'
+    | '/lms/quizzes'
+    | '/lms/reports'
+    | '/projects/$projectId'
+    | '/sop-library/$sopId'
+    | '/issues/'
+    | '/lms/'
+    | '/projects/'
+    | '/sop-library/'
+    | '/projects/$projectId/'
+    | '/projects/$projectId/sops/$projectSopId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuditsRoute: typeof AuditsRoute
+  CompetencyRoute: typeof CompetencyRoute
+  DashboardRoute: typeof DashboardRoute
+  DocumentsRoute: typeof DocumentsRoute
+  LmsRoute: typeof LmsRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  IssuesIssueIdRoute: typeof IssuesIssueIdRoute
+  ProjectsProjectIdRoute: typeof ProjectsProjectIdRouteWithChildren
+  SopLibrarySopIdRoute: typeof SopLibrarySopIdRoute
+  IssuesIndexRoute: typeof IssuesIndexRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
+  SopLibraryIndexRoute: typeof SopLibraryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +289,188 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/audits': {
+      id: '/audits'
+      path: '/audits'
+      fullPath: '/audits'
+      preLoaderRoute: typeof AuditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competency': {
+      id: '/competency'
+      path: '/competency'
+      fullPath: '/competency'
+      preLoaderRoute: typeof CompetencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents': {
+      id: '/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof DocumentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lms': {
+      id: '/lms'
+      path: '/lms'
+      fullPath: '/lms'
+      preLoaderRoute: typeof LmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/issues/': {
+      id: '/issues/'
+      path: '/issues'
+      fullPath: '/issues/'
+      preLoaderRoute: typeof IssuesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/issues/$issueId': {
+      id: '/issues/$issueId'
+      path: '/issues/$issueId'
+      fullPath: '/issues/$issueId'
+      preLoaderRoute: typeof IssuesIssueIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lms/': {
+      id: '/lms/'
+      path: '/'
+      fullPath: '/lms/'
+      preLoaderRoute: typeof LmsIndexRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/assessments': {
+      id: '/lms/assessments'
+      path: '/assessments'
+      fullPath: '/lms/assessments'
+      preLoaderRoute: typeof LmsAssessmentsRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/my-learning': {
+      id: '/lms/my-learning'
+      path: '/my-learning'
+      fullPath: '/lms/my-learning'
+      preLoaderRoute: typeof LmsMyLearningRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/quizzes': {
+      id: '/lms/quizzes'
+      path: '/quizzes'
+      fullPath: '/lms/quizzes'
+      preLoaderRoute: typeof LmsQuizzesRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/lms/reports': {
+      id: '/lms/reports'
+      path: '/reports'
+      fullPath: '/lms/reports'
+      preLoaderRoute: typeof LmsReportsRouteImport
+      parentRoute: typeof LmsRoute
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$projectId': {
+      id: '/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProjectsProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sop-library/': {
+      id: '/sop-library/'
+      path: '/sop-library'
+      fullPath: '/sop-library/'
+      preLoaderRoute: typeof SopLibraryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sop-library/$sopId': {
+      id: '/sop-library/$sopId'
+      path: '/sop-library/$sopId'
+      fullPath: '/sop-library/$sopId'
+      preLoaderRoute: typeof SopLibrarySopIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$projectId/': {
+      id: '/projects/$projectId/'
+      path: '/'
+      fullPath: '/projects/$projectId/'
+      preLoaderRoute: typeof ProjectsProjectIdIndexRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/sops/$projectSopId': {
+      id: '/projects/$projectId/sops/$projectSopId'
+      path: '/sops/$projectSopId'
+      fullPath: '/projects/$projectId/sops/$projectSopId'
+      preLoaderRoute: typeof ProjectsProjectIdSopsProjectSopIdRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
   }
 }
 
+interface LmsRouteChildren {
+  LmsAssessmentsRoute: typeof LmsAssessmentsRoute
+  LmsMyLearningRoute: typeof LmsMyLearningRoute
+  LmsQuizzesRoute: typeof LmsQuizzesRoute
+  LmsReportsRoute: typeof LmsReportsRoute
+  LmsIndexRoute: typeof LmsIndexRoute
+}
+
+const LmsRouteChildren: LmsRouteChildren = {
+  LmsAssessmentsRoute: LmsAssessmentsRoute,
+  LmsMyLearningRoute: LmsMyLearningRoute,
+  LmsQuizzesRoute: LmsQuizzesRoute,
+  LmsReportsRoute: LmsReportsRoute,
+  LmsIndexRoute: LmsIndexRoute,
+}
+
+const LmsRouteWithChildren = LmsRoute._addFileChildren(LmsRouteChildren)
+
+interface ProjectsProjectIdRouteChildren {
+  ProjectsProjectIdIndexRoute: typeof ProjectsProjectIdIndexRoute
+  ProjectsProjectIdSopsProjectSopIdRoute: typeof ProjectsProjectIdSopsProjectSopIdRoute
+}
+
+const ProjectsProjectIdRouteChildren: ProjectsProjectIdRouteChildren = {
+  ProjectsProjectIdIndexRoute: ProjectsProjectIdIndexRoute,
+  ProjectsProjectIdSopsProjectSopIdRoute:
+    ProjectsProjectIdSopsProjectSopIdRoute,
+}
+
+const ProjectsProjectIdRouteWithChildren =
+  ProjectsProjectIdRoute._addFileChildren(ProjectsProjectIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuditsRoute: AuditsRoute,
+  CompetencyRoute: CompetencyRoute,
+  DashboardRoute: DashboardRoute,
+  DocumentsRoute: DocumentsRoute,
+  LmsRoute: LmsRouteWithChildren,
+  LoginRoute: LoginRoute,
+  IssuesIssueIdRoute: IssuesIssueIdRoute,
+  ProjectsProjectIdRoute: ProjectsProjectIdRouteWithChildren,
+  SopLibrarySopIdRoute: SopLibrarySopIdRoute,
+  IssuesIndexRoute: IssuesIndexRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
+  SopLibraryIndexRoute: SopLibraryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
